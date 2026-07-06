@@ -59,7 +59,7 @@ def upgrade():
         sa.Column("tenant_id", UUID(as_uuid=True), sa.ForeignKey("tenants.id"), nullable=False),
         sa.Column("title", sa.Text, nullable=False),
         sa.Column("body", sa.Text, nullable=False),
-        sa.Column("embedding", Vector(1536), nullable=True),
+        sa.Column("embedding", Vector(384), nullable=True),
         sa.Column("created_at", sa.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text("now()")),
     )
     op.execute("ALTER TABLE kb_articles ENABLE ROW LEVEL SECURITY;")

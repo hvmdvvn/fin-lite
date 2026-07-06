@@ -9,7 +9,12 @@ router = APIRouter()
 
 
 @router.post("/tickets", status_code=202)
-def create_ticket(payload: TicketCreate, db=Depends(get_tenant_db)):
+def create_ticket(
+    payload: TicketCreate,
+    ctx=Depends(get_tenant_db)
+):
+
+    db, tenant_id = ctx
 
     result = db.execute(
         text("""
@@ -28,14 +33,13 @@ def create_ticket(payload: TicketCreate, db=Depends(get_tenant_db)):
     ticket_id = result.fetchone()[0]
     db.commit()
 
-    # enqueue async job
-    enqueue_classify(str(ticket_id))
+    # FIX HERE
+    enqueue_classify(str(ticket_id), tenant_id)
 
     return {
         "ticket_id": str(ticket_id),
         "status": "new"
     }
-
 
 @router.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id: str, db=Depends(get_tenant_db)):

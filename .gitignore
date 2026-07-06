@@ -191,6 +191,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 
-
 commit.txt
+
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,redis

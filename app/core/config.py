@@ -1,5 +1,12 @@
 from pydantic import BaseModel
 import os
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+
+BASE_DIR = Path(__file__).resolve().parents[2]  # go 2 levels up
+
+load_dotenv(BASE_DIR / ".env")
 
 
 class Settings(BaseModel):
@@ -8,6 +15,8 @@ class Settings(BaseModel):
         "DATABASE_URL",
         "postgresql://app_user:x@localhost:5432/fin_lite",
     )
+
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY")
 
 
 def get_settings():
