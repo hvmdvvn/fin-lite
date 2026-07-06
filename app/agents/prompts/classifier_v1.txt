@@ -1,0 +1,22 @@
+Classify this support ticket.
+
+Respond with JSON only. No preamble, no explanation, no markdown formatting, no code fences.
+Output exactly this shape:
+
+{"category": "billing"|"bug"|"how_to"|"other", "urgency": "low"|"normal"|"high"}
+
+Rules:
+- "category" must be exactly one of: billing, bug, how_to, other.
+- "urgency" must be exactly one of: low, normal, high.
+- "billing": payments, invoices, refunds, subscription/plan changes, pricing questions.
+- "bug": something is broken, erroring, or not working as expected.
+- "how_to": the user is asking how to do something the product already supports.
+- "other": anything that doesn't clearly fit the above.
+- "urgency" should be "high" only for account lockouts, data loss, security concerns, or complete inability to use the product.
+- "urgency" should be "low" for cosmetic issues, general questions, or feature requests with no immediate impact.
+- Default to "normal" when unsure.
+
+Subject: {{ subject }}
+
+Body:
+{{ body }}
