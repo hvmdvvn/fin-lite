@@ -1,0 +1,82 @@
+name: RLS Isolation Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+
+jobs:
+
+  test-rls:
+
+    name: PostgreSQL RLS Security Tests
+
+    runs-on: ubuntu-latest
+
+
+    services:
+
+      postgres:
+
+        image: ankane/pgvector
+
+        ports:
+          - 5432:5432
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fin_lite
+
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+
+    steps:
+
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
+        with:
+          python-version: "3.11"
+
+
+
+      - name: Install dependencies
+        run: |
+
+          pip install -r requirements.txt
+
+
+
+      - name: Run migrations
+        env:
+
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/fin_lite
+
+        run: |
+
+          alembic upgrade head
+
+
+
+      - name: Run RLS security tests
+        env:
+
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/fin_lite
+
+        run:
+
+          pytest tests/integration/test_rls_isolation.py -v

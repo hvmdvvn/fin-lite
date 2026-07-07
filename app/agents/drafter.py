@@ -6,6 +6,7 @@ from jinja2 import Template
 from app.db.session import SessionLocal
 from app.core.tenancy import set_tenant_context
 from app.agents.llm import generate_reply
+from app.core.queue import get_next_draft_job
 
 
 # redis_client = redis.Redis(
@@ -153,17 +154,14 @@ def process_job(job: dict):
         print(f"Draft created for ticket {ticket_id}")
 
         # ---------------------------
-        # 7. Enqueue QA (stub)
+        # 7. Enqueue QA
         # ---------------------------
-        redis_client.lpush(
-            "qa",
-            json.dumps(
-                {
-                    "ticket_id": ticket_id,
-                    "tenant_id": tenant_id,
-                }
-            ),
+        enqueue_qa(
+            ticket_id=ticket_id,
+            tenant_id=tenant_id,
         )
+
+        print(f"Queued ticket {ticket_id} for QA")
 
     finally:
         db.close()
@@ -173,13 +171,11 @@ def worker():
     print("Drafter worker started...")
 
     while True:
-        item = redis_client.brpop("draft", timeout=5)
 
-        if item is None:
+        job = get_next_draft_job()
+
+        if job is None:
             continue
-
-        _, payload = item
-        job = json.loads(payload)
 
         process_job(job)
 

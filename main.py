@@ -5,6 +5,7 @@ from app.api.debug import router as debug_router
 from app.api.kb import router as kb_router
 
 
+
 app = FastAPI()
 
 app.include_router(tickets_router)
