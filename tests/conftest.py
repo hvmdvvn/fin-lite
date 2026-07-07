@@ -116,7 +116,7 @@ def set_test_tenant(db_session, tenant_id):
     db_session.execute(
         text(
             """
-            SET LOCAL app.tenant_id = :tenant_id
+            SET app.tenant_id = :tenant_id
             """
         ),
         {
