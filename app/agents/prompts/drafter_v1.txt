@@ -9,15 +9,15 @@ say that you don't have enough information.
 
 Knowledge Base
 
-{kb}
+{{kb}}
 
 Customer Ticket
 
 Subject:
-{subject}
+{{subject}}
 
 Body:
-{body}
+{{body}}
 
 Return ONLY valid JSON:
 

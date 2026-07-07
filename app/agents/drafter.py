@@ -105,6 +105,10 @@ def process_job(job: dict):
             kb=kb_text,
         )
 
+        # print("=" * 80)
+        # print(prompt)
+        # print("=" * 80)
+
         # ---------------------------
         # 5. Call Groq LLM
         # ---------------------------
