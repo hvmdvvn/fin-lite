@@ -25,12 +25,33 @@ def upgrade():
         op.execute(f"DROP POLICY IF EXISTS {policy} ON {table};")
 
     # Recreate policies with proper tenant context handling
-    # The policy now checks if tenant_id matches the current setting
-    # When app.tenant_id is not set (empty or null), queries return no results
+    # Separate SELECT policy from INSERT/UPDATE/DELETE policies
+    
+    # Tickets policies
     op.execute(
         """
-        CREATE POLICY tenant_isolation_tickets ON tickets
+        CREATE POLICY tenant_isolation_tickets_select ON tickets
         FOR SELECT
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_tickets_write ON tickets
+        FOR INSERT
+        WITH CHECK (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_tickets_update ON tickets
+        FOR UPDATE
         USING (
             tenant_id = current_setting('app.tenant_id', true)::uuid
         )
@@ -39,11 +60,42 @@ def upgrade():
         );
         """
     )
-
+    
     op.execute(
         """
-        CREATE POLICY tenant_isolation_kb ON kb_articles
+        CREATE POLICY tenant_isolation_tickets_delete ON tickets
+        FOR DELETE
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+
+    # KB Articles policies
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_kb_select ON kb_articles
         FOR SELECT
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_kb_write ON kb_articles
+        FOR INSERT
+        WITH CHECK (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_kb_update ON kb_articles
+        FOR UPDATE
         USING (
             tenant_id = current_setting('app.tenant_id', true)::uuid
         )
@@ -52,11 +104,42 @@ def upgrade():
         );
         """
     )
-
+    
     op.execute(
         """
-        CREATE POLICY tenant_isolation_replies ON replies
+        CREATE POLICY tenant_isolation_kb_delete ON kb_articles
+        FOR DELETE
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+
+    # Replies policies
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_replies_select ON replies
         FOR SELECT
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_replies_write ON replies
+        FOR INSERT
+        WITH CHECK (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_replies_update ON replies
+        FOR UPDATE
         USING (
             tenant_id = current_setting('app.tenant_id', true)::uuid
         )
@@ -65,15 +148,56 @@ def upgrade():
         );
         """
     )
-
+    
     op.execute(
         """
-        CREATE POLICY tenant_isolation_feedback ON feedback_events
+        CREATE POLICY tenant_isolation_replies_delete ON replies
+        FOR DELETE
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+
+    # Feedback Events policies
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_feedback_select ON feedback_events
         FOR SELECT
+        USING (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_feedback_write ON feedback_events
+        FOR INSERT
+        WITH CHECK (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_feedback_update ON feedback_events
+        FOR UPDATE
         USING (
             tenant_id = current_setting('app.tenant_id', true)::uuid
         )
         WITH CHECK (
+            tenant_id = current_setting('app.tenant_id', true)::uuid
+        );
+        """
+    )
+    
+    op.execute(
+        """
+        CREATE POLICY tenant_isolation_feedback_delete ON feedback_events
+        FOR DELETE
+        USING (
             tenant_id = current_setting('app.tenant_id', true)::uuid
         );
         """
